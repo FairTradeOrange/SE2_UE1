@@ -129,11 +129,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             textView_Serverantwort.setText(MessageFormat.format("Matrikelnummer mod 7 = {0}\n", getMatrMod7()));
 
             AlternierendeQuersumme alternierendeQuersumme = new AlternierendeQuersumme(matrikelNummer);
-
-            if (alternierendeQuersumme.solve() % 2 == 0) {
-                textView_Serverantwort.append(MessageFormat.format("Die alternierende Quersumme von {0} ist gerade.", matrikelNummer));
+            int altQuer = alternierendeQuersumme.solve();
+            if (altQuer % 2 == 0) {
+                textView_Serverantwort.append(MessageFormat.format("Die alternierende Quersumme von {0} ist gerade. ->{1}", matrikelNummer,altQuer));
             } else {
-                textView_Serverantwort.append(MessageFormat.format("Die alternierende Quersumme von {0} ist ungerade.", matrikelNummer));
+                textView_Serverantwort.append(MessageFormat.format("Die alternierende Quersumme von {0} ist ungerade. ->{1}", matrikelNummer,altQuer));
             }
 
         }
