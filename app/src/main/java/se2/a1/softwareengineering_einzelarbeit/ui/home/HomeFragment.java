@@ -13,16 +13,10 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Objects;
-
-import se2.a1.softwareengineering_einzelarbeit.MainActivity;
 import se2.a1.softwareengineering_einzelarbeit.R;
 import se2.a1.softwareengineering_einzelarbeit.databinding.FragmentHomeBinding;
 
@@ -45,7 +39,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Switch simpleSwitch;
 
     // Variablen
-    private static String MY_MATR_NUMBER = "11907142";
+    private final static String MY_MATR_NUMBER = "11907142";
     private boolean finished = true;
     private int progress = 0;
     private final int maxProgress = 100;
