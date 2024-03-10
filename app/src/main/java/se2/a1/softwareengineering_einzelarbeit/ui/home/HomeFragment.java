@@ -1,47 +1,139 @@
 package se2.a1.softwareengineering_einzelarbeit.ui.home;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.IOException;
+import java.util.Objects;
+
+import se2.a1.softwareengineering_einzelarbeit.MainActivity;
+import se2.a1.softwareengineering_einzelarbeit.R;
 import se2.a1.softwareengineering_einzelarbeit.databinding.FragmentHomeBinding;
 
-public class HomeFragment extends Fragment {
+/**
+ * Fragment der Hauptseite
+ */
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private FragmentHomeBinding binding;
-    private Button server_send;
-    private EditText matrikel_number;
+    Handler handler = new Handler();
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
 
+    // UI-Objekte
+    private Button btn_sendMatrToServer;
+    private EditText editTextNumber_Matr;
+    private TextView textView_Matrikelnummer;
+    private TextView textView_Serverantwort;
+    private ProgressBar simpleProgressBar;
+    private HomeViewModel homeViewModel;
+    private Switch simpleSwitch;
+
+    // Variablen
+    private boolean finished = true;
+    private int progress = 0;
+    private final int maxProgress = 100;
+    private final int updateIntervalInMillis = 1000;
+    private final int duration = 40;
+
+
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        View rootView = binding.getRoot();
 
-        server_send = binding.buttonHomefragMatrikelnummer;
-        matrikel_number = binding.edittnHomefragMatrikelnummer;
+        // UI-Objekte
+        editTextNumber_Matr = binding.edittnHomefragMatrikelnummer;
+        textView_Matrikelnummer = binding.tvHomefragMatrikelnummer;
+        textView_Serverantwort = binding.tvHomefragAntwort;
+        simpleProgressBar = binding.fragmentHomeProgressBar;
+        simpleProgressBar.setVisibility(View.VISIBLE);
+        simpleSwitch = binding.switchAufgabe;
 
-        final TextView textView_Matrikelnummer = binding.tvHomefragMatrikelnummer;
-        final TextView textView_Serverantwort = binding.tvHomefragAntwort;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView_Serverantwort::setText);
-        return root;
+
+        // Button - set ClickListener
+        btn_sendMatrToServer = binding.buttonHomefragMatrikelnummer;
+        btn_sendMatrToServer.setOnClickListener(this);
+
+        homeViewModel.getServerData().observe(getViewLifecycleOwner(), textView_Serverantwort::setText);
+
+        return rootView;
     }
-
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+
+    /**
+     * Progressbar-Visualisierung während Server-Kommunikation
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v) {
+
+
+        // close keyboard :
+        // https://stackoverflow.com/questions/1109022/how-can-i-close-hide-the-android-soft-keyboard-programmatically
+        ((InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(requireView().getWindowToken(), 0);
+
+        String matrikelNummerText = editTextNumber_Matr.getText().toString();
+        if (matrikelNummerText.isEmpty()) {
+            Toast.makeText(getContext(), "Bitte eine Matrikelnummer eingeben", Toast.LENGTH_SHORT).show();
+        } else {
+
+            if (!finished) {
+                Toast.makeText(getActivity(), "Neue Anfrage in " + (duration - progress) + " Sekunden.", Toast.LENGTH_LONG).show();
+            } else {
+                homeViewModel.sendMatrToServer(matrikelNummerText);
+                // Progressbar-Logik
+                final int increment = maxProgress * updateIntervalInMillis / (duration * updateIntervalInMillis);
+
+                // Thread für Progressbar
+                new Thread(new Runnable() {
+                    public void run() {
+                        finished = false;
+                        while (progress < maxProgress) {
+                            progress += increment;
+
+                            // Aktualisieren der Progressbar
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    simpleProgressBar.setProgress(progress);
+                                }
+                            });
+                            try {
+                                Thread.sleep(updateIntervalInMillis);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        progress = 0;
+                        finished = true;
+                        textView_Serverantwort.setText(R.string.starte_mit_eingabe_der_matrikelnummer);
+                    }
+                }).start();
+            }
+
+        }
     }
 }

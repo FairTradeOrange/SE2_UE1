@@ -8,40 +8,40 @@
 
     <TextView
         android:id="@+id/tv_homefrag_antwort"
-        android:layout_width="390dp"
-        android:layout_height="62dp"
+        android:layout_width="336dp"
+        android:layout_height="202dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="Antwort vom Server"
         android:textAlignment="center"
         android:textSize="20sp"
+        android:typeface="monospace"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.394" />
+        app:layout_constraintVertical_bias="0.775" />
 
     <Button
         android:id="@+id/button_homefrag_matrikelnummer"
         android:layout_width="192dp"
         android:layout_height="54dp"
-        android:layout_marginStart="109dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="110dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="72dp"
         android:text="Abschicken"
+        app:layout_constraintBottom_toTopOf="@+id/tv_homefrag_antwort"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_homefrag_antwort" />
+        app:layout_constraintTop_toBottomOf="@+id/edittn_homefrag_matrikelnummer" />
 
     <TextView
         android:id="@+id/tv_homefrag_matrikelnummer"
         android:layout_width="281dp"
         android:layout_height="48dp"
         android:layout_marginStart="65dp"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="65dp"
         android:text="Matrikelnummer eingeben:"
         android:textAlignment="center"
@@ -49,7 +49,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_home_progressBar" />
 
     <EditText
         android:id="@+id/edittn_homefrag_matrikelnummer"
@@ -65,4 +65,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_homefrag_matrikelnummer" />
+
+    <ProgressBar
+        android:id="@+id/fragment_home_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="192dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="109dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="110dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Switch
+        android:id="@+id/switch_Aufgabe"
+        android:layout_width="113dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginBottom="72dp"
+        android:text="A1 / A2"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tv_homefrag_antwort"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edittn_homefrag_matrikelnummer"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
