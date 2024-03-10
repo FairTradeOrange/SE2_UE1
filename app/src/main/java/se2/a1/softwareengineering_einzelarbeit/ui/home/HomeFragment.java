@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Objects;
 
 import se2.a1.softwareengineering_einzelarbeit.MainActivity;
@@ -82,58 +83,80 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         binding = null;
     }
 
+    public int getMatrMod7(){
+        String Matr = editTextNumber_Matr.getText().toString();
+        return (Integer.parseInt(Matr)%7);
+    }
+
+    public boolean isFinished(){
+        if (finished){
+            return true;
+        }else{
+            Toast.makeText(getActivity(), "Neue Anfrage in " + (duration - progress) + " Sekunden.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
 
     /**
      * Progressbar-Visualisierung während Server-Kommunikation
-     *
      * @param v The view that was clicked.
      */
     @Override
     public void onClick(View v) {
 
+        if (simpleSwitch.isChecked()) {
+            // Aufgabe 1:
 
-        // close keyboard :
-        // https://stackoverflow.com/questions/1109022/how-can-i-close-hide-the-android-soft-keyboard-programmatically
-        ((InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(requireView().getWindowToken(), 0);
+            // close keyboard :
+            // https://stackoverflow.com/questions/1109022/how-can-i-close-hide-the-android-soft-keyboard-programmatically
+            ((InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(requireView().getWindowToken(), 0);
 
-        String matrikelNummerText = editTextNumber_Matr.getText().toString();
-        if (matrikelNummerText.isEmpty()) {
-            Toast.makeText(getContext(), "Bitte eine Matrikelnummer eingeben", Toast.LENGTH_SHORT).show();
-        } else {
-
-            if (!finished) {
-                Toast.makeText(getActivity(), "Neue Anfrage in " + (duration - progress) + " Sekunden.", Toast.LENGTH_LONG).show();
+            String matrikelNummerText = editTextNumber_Matr.getText().toString();
+            if (matrikelNummerText.isEmpty()) {
+                Toast.makeText(getContext(), "Bitte eine Matrikelnummer eingeben", Toast.LENGTH_SHORT).show();
             } else {
-                homeViewModel.sendMatrToServer(matrikelNummerText);
-                // Progressbar-Logik
-                final int increment = maxProgress * updateIntervalInMillis / (duration * updateIntervalInMillis);
-
-                // Thread für Progressbar
-                new Thread(new Runnable() {
-                    public void run() {
-                        finished = false;
-                        while (progress < maxProgress) {
-                            progress += increment;
-
-                            // Aktualisieren der Progressbar
-                            handler.post(new Runnable() {
-                                public void run() {
-                                    simpleProgressBar.setProgress(progress);
-                                }
-                            });
-                            try {
-                                Thread.sleep(updateIntervalInMillis);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        progress = 0;
-                        finished = true;
-                        textView_Serverantwort.setText(R.string.starte_mit_eingabe_der_matrikelnummer);
-                    }
-                }).start();
+                if (isFinished()){
+                    homeViewModel.sendMatrToServer(matrikelNummerText);
+                    // Progressbar-Logik
+                    startProgressBarThread();
+                }
             }
+        }else {
+            // Aufgabe 2:
+            textView_Serverantwort.setText(MessageFormat.format("Matrikelnummer mod 7 = {0}", getMatrMod7()));
+
+
 
         }
+    }
+
+    public void startProgressBarThread(){
+        final int increment = maxProgress * updateIntervalInMillis / (duration * updateIntervalInMillis);
+
+        // Thread für Progressbar
+        new Thread(new Runnable() {
+            public void run() {
+                finished = false;
+                while (progress < maxProgress) {
+                    progress += increment;
+
+                    // Aktualisieren der Progressbar
+                    handler.post(new Runnable() {
+                        public void run() {
+                            simpleProgressBar.setProgress(progress);
+                        }
+                    });
+                    try {
+                        Thread.sleep(updateIntervalInMillis);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                progress = 0;
+                finished = true;
+                textView_Serverantwort.setText(R.string.starte_mit_eingabe_der_matrikelnummer);
+            }
+        }).start();
     }
 }
