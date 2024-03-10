@@ -45,6 +45,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Switch simpleSwitch;
 
     // Variablen
+    private static String MY_MATR_NUMBER = "11907142";
     private boolean finished = true;
     private int progress = 0;
     private final int maxProgress = 100;
@@ -105,28 +106,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        if (simpleSwitch.isChecked()) {
+        String matrikelNummer = editTextNumber_Matr.getText().toString();
+
+        // close keyboard :
+        // https://stackoverflow.com/questions/1109022/how-can-i-close-hide-the-android-soft-keyboard-programmatically
+        ((InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(requireView().getWindowToken(), 0);
+
+        if (!simpleSwitch.isChecked()) {
             // Aufgabe 1:
 
-            // close keyboard :
-            // https://stackoverflow.com/questions/1109022/how-can-i-close-hide-the-android-soft-keyboard-programmatically
-            ((InputMethodManager) requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(requireView().getWindowToken(), 0);
-
-            String matrikelNummerText = editTextNumber_Matr.getText().toString();
-            if (matrikelNummerText.isEmpty()) {
+            if (matrikelNummer.isEmpty()) {
                 Toast.makeText(getContext(), "Bitte eine Matrikelnummer eingeben", Toast.LENGTH_SHORT).show();
             } else {
                 if (isFinished()){
-                    homeViewModel.sendMatrToServer(matrikelNummerText);
+                    homeViewModel.sendMatrToServer(matrikelNummer);
                     // Progressbar-Logik
                     startProgressBarThread();
                 }
             }
         }else {
             // Aufgabe 2:
-            textView_Serverantwort.setText(MessageFormat.format("Matrikelnummer mod 7 = {0}", getMatrMod7()));
+            textView_Serverantwort.setText(MessageFormat.format("Matrikelnummer mod 7 = {0}\n", getMatrMod7()));
 
+            AlternierendeQuersumme alternierendeQuersumme = new AlternierendeQuersumme(matrikelNummer);
 
+            if (alternierendeQuersumme.solve() % 2 == 0) {
+                textView_Serverantwort.append(MessageFormat.format("Die alternierende Quersumme von {0} ist gerade.", matrikelNummer));
+            } else {
+                textView_Serverantwort.append(MessageFormat.format("Die alternierende Quersumme von {0} ist ungerade.", matrikelNummer));
+            }
 
         }
     }
