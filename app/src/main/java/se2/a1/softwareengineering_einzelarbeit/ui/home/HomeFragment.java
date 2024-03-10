@@ -100,7 +100,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 
     /**
-     * Progressbar-Visualisierung während Server-Kommunikation
+     * Verarbeitung der Matrikelnummer nach Drücken des Button:
+     * - Switch off: A1 - Kommunikation mit Server SE2
+     * - Switch on: A2 - Alternierende Quersumme
      * @param v The view that was clicked.
      */
     @Override
@@ -139,6 +141,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * Progressbar-Visualisierung und Entschleunigungsmaßnahme  :D
+     */
     public void startProgressBarThread(){
         final int increment = maxProgress * updateIntervalInMillis / (duration * updateIntervalInMillis);
 
